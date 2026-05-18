@@ -18,7 +18,7 @@ library(ape)
 
 # Import data
 data <- read_delim(
-  input,
+  "results_alleles.tsv",
   delim = "\t",
   col_types = cols(.default = "c")
 )
@@ -39,8 +39,11 @@ data_clean <- data %>%
 # missing alleles
 data_filtered <- data_clean %>%
   mutate(NA_count = apply(., 1, function(x) sum(is.na(x)))) %>%
-  filter(NA_count <= as.numeric(max_missing)) %>%
-  select(-NA_count)
+  filter(NA_count <= as.numeric("38")) %>%
+  select(-NA_count) %>%
+  mutate_at(vars(-FILE),
+            as.factor) %>%
+  column_to_rownames("FILE")
 
 
 
