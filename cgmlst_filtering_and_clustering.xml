@@ -1,0 +1,63 @@
+<tool id="cgmlst_filtering_and_clustering" name="cgMLST filtering and clustering (R)" version="1.0.0">
+
+    <description>
+        Filtering and hierarchical clustering of ChewBBACA cgMLST allele results
+    </description>
+
+    <requirements>
+        <requirement type="package" version="4.5.0">r-base</requirement>
+        <requirement type="package">r-readr</requirement>
+        <requirement type="package">r-dplyr</requirement>
+        <requirement type="package">r-tidyr</requirement>
+        <requirement type="package">r-tibble</requirement>
+        <requirement type="package">r-cluster</requirement>
+        <requirement type="package">r-purrr</requirement>
+        <requirement type="package">r-ape</requirement>
+    </requirements>
+
+    <command detect_errors="exit_code"><![CDATA[
+        Rscript $__tool_directory__/filter_and_cluster.R
+            $input
+            $max_missing
+            $clustering_method
+    ]]></command>
+
+    <inputs>
+        <param name="input" type="data" format="tabular"
+               label="ChewBBACA allelecall results file (results_alleles)"/>
+
+        <param name="clustering_method" type="select" label="Clustering method">
+            <option value="single">Single linkage</option>
+            <option value="nj">Neighbor joining</option>
+        </param>
+
+        <param name="Maximum missing alleles" type="float" value="10"
+               label="Filtering threshold, samples with more than N missing alleles will be removed"/>
+    </inputs>
+
+    <outputs>
+        <data name="dissimilarity_matrix" format="tabular"
+              label="dissimilarity_matrix.tsv"/>
+              
+        <data name="hamming_distances" format="tabular"
+              label="hamming_distances.tsv"/>
+
+        <data name="tree" format="newick"
+              label="cgMLST_tree.nwk"/>
+    </outputs>
+
+    <help><![CDATA[
+This tool performs filtering and hierarchical clustering of cgMLST data.
+
+Input:
+- Allele profile matrix from ChewBBACA.
+- A value for max missing alleles, used to filter out samples with >N missing alleles
+- Clustering method specification, either "single" or "nj"
+
+Outputs:
+- Dissimilarity matrix table
+- Hamming distance table
+- Newick tree
+    ]]></help>
+
+</tool>
