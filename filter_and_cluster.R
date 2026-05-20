@@ -2,9 +2,35 @@
 
 args <- commandArgs(trailingOnly = TRUE)
 
-input <- args[1]
-max_missing <- args[2]
-clustering_method <- args[3]
+get_arg <- function(flag, default = NULL) {
+  idx <- match(flag, args)
+
+  if (is.na(idx)) {
+    return(default)
+  }
+
+  if (idx == length(args)) {
+    stop(paste("Missing value for argument:", flag), call. = FALSE)
+  }
+
+  args[idx + 1]
+}
+
+input <- get_arg("--input")
+max_missing <- get_arg("--max_missing")
+clustering_method <- get_arg("--clustering_method")
+
+dissimilarity_matrix_out <- get_arg("--dissimilarity_matrix", "dissimilarity_matrix.tsv")
+hamming_distances_out <- get_arg("--hamming_distances", "hamming_distances.tsv")
+tree_out <- get_arg("--tree", "dendrogram.nwk")
+
+if (is.null(input)) {
+  stop("Missing required argument: --input", call. = FALSE)
+}
+
+if (is.null(clustering_method)) {
+  stop("Missing required argument: --clustering_method", call. = FALSE)
+}
 
 # Load libraries
 library(readr)
@@ -18,7 +44,7 @@ library(ape)
 
 # Import data
 data <- read_delim(
-  "results_alleles.tsv",
+  input,
   delim = "\t",
   col_types = cols(.default = "c")
 )
@@ -45,8 +71,6 @@ data_filtered <- data_clean %>%
             as.factor) %>%
   column_to_rownames("FILE")
 
-
-
 # Calculate dissimilarity matrix
 dissimilarity <- daisy(
   data_filtered,
@@ -62,7 +86,7 @@ dissimilarity_output <- as.data.frame(
 
 write_delim(
   dissimilarity_output,
-  "dissimilarity_matrix.tsv",
+  dissimilarity_matrix_out,
   delim = "\t"
 )
 
@@ -105,7 +129,7 @@ hamming <- combn(colnames(transposed_data), 2, simplify = FALSE) %>%
 
 write_delim(
   hamming,
-  "hamming_distances.tsv",
+  hamming_distances_out,
   delim = "\t"
 )
 
@@ -114,9 +138,11 @@ if (clustering_method == "single") {
   tree <- as.phylo(hclust(dissimilarity, "single"))
 } else if (clustering_method == "nj") {
   tree <- nj(dissimilarity)
+} else {
+  stop("Invalid clustering_method. Use 'single' or 'nj'.", call. = FALSE)
 }
 
 write.tree(
   tree,
-  "dendrogram.nwk"
+  tree_out
 )
