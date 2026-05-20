@@ -1,0 +1,11 @@
+isolate1	isolate2	hamming	compared_alleles_pair	typed_alleles_pair	missing_alleles_pair	typed_alleles_isolate1	typed_alleles_isolate2	missing_alleles_isolate1	missing_alleles_isolate2
+2014-01-5792-1-1-4-1_filtered	2014-01-6924-1-1-4-1_filtered	32	33	39	39	38	34	34	38
+2014-01-5792-1-1-4-1_filtered	2014-01-7234-1-1-4-1_filtered	32	33	39	39	38	34	34	38
+2014-01-5792-1-1-4-1_filtered	2015-01-1661-1-1-3-1_filtered	34	34	41	38	38	37	34	35
+2014-01-5792-1-1-4-1_filtered	2015-01-466-1-1-3-1_filtered	31	32	40	40	38	34	34	38
+2014-01-6924-1-1-4-1_filtered	2014-01-7234-1-1-4-1_filtered	0	33	35	39	34	34	38	38
+2014-01-6924-1-1-4-1_filtered	2015-01-1661-1-1-3-1_filtered	9	33	38	39	34	37	38	35
+2014-01-6924-1-1-4-1_filtered	2015-01-466-1-1-3-1_filtered	28	32	36	40	34	34	38	38
+2014-01-7234-1-1-4-1_filtered	2015-01-1661-1-1-3-1_filtered	10	34	37	38	34	37	38	35
+2014-01-7234-1-1-4-1_filtered	2015-01-466-1-1-3-1_filtered	28	31	37	41	34	34	38	38
+2015-01-1661-1-1-3-1_filtered	2015-01-466-1-1-3-1_filtered	30	33	38	39	37	34	35	38

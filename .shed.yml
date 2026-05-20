@@ -1,0 +1,26 @@
+name: cgmlst_filtering_and_clustering
+owner: ajkarloss
+description: Filter ChewBBACA cgMLST allele profiles and generate clustering trees
+long_description: |
+  Galaxy wrapper for filtering ChewBBACA cgMLST allele call results.
+
+  This tool removes samples with too many missing allele calls, calculates a
+  Gower dissimilarity matrix, calculates pairwise Hamming distances, and
+  generates a Newick tree using either single-linkage hierarchical clustering
+  or neighbor joining.
+categories:
+  - Phylogenetics
+  - Sequence Analysis
+  - Microbiology
+remote_repository_url: https://github.com/YOUR_GITHUB_USERNAME/cgmlst_filtering_and_clustering
+homepage_url: https://github.com/YOUR_GITHUB_USERNAME/cgmlst_filtering_and_clustering
+type: unrestricted
+auto_tool_repositories:
+  name_template: "{{ tool_id }}"
+  description_template: "{{ tool_name }}"
+suite:
+  name: suite_cgmlst_filtering_and_clustering
+  description: Suite for cgMLST filtering and clustering
+  long_description: |
+    Suite containing a Galaxy tool for filtering and clustering ChewBBACA
+    cgMLST allele call results.
