@@ -12,8 +12,8 @@ categories:
   - Phylogenetics
   - Sequence Analysis
   - Microbiology
-remote_repository_url: https://github.com/YOUR_GITHUB_USERNAME/cgmlst_filtering_and_clustering
-homepage_url: https://github.com/YOUR_GITHUB_USERNAME/cgmlst_filtering_and_clustering
+remote_repository_url: https://github.com/NorwegianVeterinaryInstitute/cgmlst_filtering_and_clustering
+homepage_url: https://github.com/NorwegianVeterinaryInstitute/cgmlst_filtering_and_clustering
 type: unrestricted
 auto_tool_repositories:
   name_template: "{{ tool_id }}"
