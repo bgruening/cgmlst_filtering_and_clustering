@@ -7,6 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: echo "CI works"
       - with:
-          github_token: ${{secrets.GH_TOKEN}}
+          token: ${{ secrets.GH_TOKEN }}
+      - run: echo "CI works"
