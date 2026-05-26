@@ -20,7 +20,10 @@ input <- get_arg("--input")
 max_missing <- get_arg("--max_missing")
 clustering_method <- get_arg("--clustering_method")
 
-dissimilarity_matrix_out <- get_arg("--dissimilarity_matrix", "dissimilarity_matrix.tsv")
+dissimilarity_matrix_out <- get_arg(
+  "--dissimilarity_matrix",
+  "dissimilarity_matrix.tsv"
+)
 hamming_distances_out <- get_arg("--hamming_distances", "hamming_distances.tsv")
 tree_out <- get_arg("--tree", "dendrogram.nwk")
 
@@ -51,24 +54,23 @@ data <- read_delim(
 
 # Clean data
 data_clean <- data %>%
-  mutate_at(vars(-FILE),
-            function(x) str_remove_all(x, "INF-")) %>%
-  mutate_at(vars(-FILE),
-            function(x) str_replace_all(
-              x,
-              "(PLOT5)|(PLOT3)|(LNF)|(ASM)|(ALM)|(NIPH)|(NIPHEM)|(PAMA)|(PLNF)|(LOTSC)",
-              NA_character_)) %>%
-  mutate_at(vars(-FILE),
-            as.factor)
+  mutate_at(vars(-FILE), function(x) str_remove_all(x, "INF-")) %>%
+  mutate_at(vars(-FILE), function(x) {
+    str_replace_all(
+      x,
+      "(PLOT5)|(PLOT3)|(LNF)|(ASM)|(ALM)|(NIPH)|(NIPHEM)|(PAMA)|(PLNF)|(LOTSC)",
+      NA_character_
+    )
+  }) %>%
+  mutate_at(vars(-FILE), as.factor)
 
-# Filter out samples with too many 
+# Filter out samples with too many
 # missing alleles
 data_filtered <- data_clean %>%
   mutate(NA_count = apply(., 1, function(x) sum(is.na(x)))) %>%
   filter(NA_count <= as.numeric("38")) %>%
   select(-NA_count) %>%
-  mutate_at(vars(-FILE),
-            as.factor) %>%
+  mutate_at(vars(-FILE), as.factor) %>%
   column_to_rownames("FILE")
 
 # Calculate dissimilarity matrix
@@ -96,36 +98,35 @@ transposed_data <- as.data.frame(as.matrix(t(data_filtered)))
 hamming <- combn(colnames(transposed_data), 2, simplify = FALSE) %>%
   map_df(function(col) {
     data.frame(
-      isolate1 = col[1], 
-      isolate2 = col[2], 
+      isolate1 = col[1],
+      isolate2 = col[2],
       hamming = sum(
-        transposed_data[,col[1]] != transposed_data[,col[2]],
+        transposed_data[, col[1]] != transposed_data[, col[2]],
         na.rm = TRUE
       ),
       compared_alleles_pair = sum(
-        !is.na(transposed_data[,col[1]]) & !is.na(transposed_data[,col[2]])
+        !is.na(transposed_data[, col[1]]) & !is.na(transposed_data[, col[2]])
       ),
       typed_alleles_pair = sum(
-        !is.na(transposed_data[,col[1]]) | !is.na(transposed_data[,col[2]])
+        !is.na(transposed_data[, col[1]]) | !is.na(transposed_data[, col[2]])
       ),
       missing_alleles_pair = sum(
-        is.na(transposed_data[,col[1]]) | is.na(transposed_data[,col[2]])
+        is.na(transposed_data[, col[1]]) | is.na(transposed_data[, col[2]])
       ),
       typed_alleles_isolate1 = sum(
-        !is.na(transposed_data[,col[1]])
+        !is.na(transposed_data[, col[1]])
       ),
       typed_alleles_isolate2 = sum(
-        !is.na(transposed_data[,col[2]])
+        !is.na(transposed_data[, col[2]])
       ),
       missing_alleles_isolate1 = sum(
-        is.na(transposed_data[,col[1]])
+        is.na(transposed_data[, col[1]])
       ),
       missing_alleles_isolate2 = sum(
-        is.na(transposed_data[,col[2]])
+        is.na(transposed_data[, col[2]])
       )
     )
-  }
-  )
+  })
 
 write_delim(
   hamming,
