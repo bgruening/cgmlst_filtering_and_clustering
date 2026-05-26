@@ -17,6 +17,7 @@ jobs:
       - name: Set up R package dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          cache: true
           packages: |
             any::readr
             any::dplyr
@@ -28,4 +29,4 @@ jobs:
             any::ape
 
       - name: Run R script
-        run: Rscript --vanilla filter_and_cluster.R --input testdata/results_alleles.tsv --clustering_method "nj"
+        run: Rscript --vanilla filter_and_cluster.R --input test-data/results_alleles.tsv --clustering_method "nj"
