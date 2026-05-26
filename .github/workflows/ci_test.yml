@@ -1,15 +1,10 @@
-name: R CI
+name: Test CI
 
-on:
-  pull_request:
-  push:
-    branches: [main]
+on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out repository
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
       - run: echo "CI works"
