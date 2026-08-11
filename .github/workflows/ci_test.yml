@@ -27,4 +27,4 @@ jobs:
             any::ape
 
       - name: Run R script
-        run: Rscript --vanilla filter_and_cluster.R --input test-data/results_alleles.tsv --clustering_method "nj" --max_missing 100
+        run: Rscript --vanilla filter_and_cluster.R --input test-data/results_alleles.tsv --clustering-method "nj" --max-missing 100
