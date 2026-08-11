@@ -1,90 +1,65 @@
-
-<tool id="cgmlst_filtering_and_clustering" name="cgMLST filtering and clustering" version="1.0.0" profile="22.05">
-
+<tool id="cgmlst_filtering_and_clustering" name="cgMLST filtering and clustering" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="@PROFILE@">
     <description>filter ChewBBACA cgMLST allele profiles and generate clustering trees</description>
-
-    <requirements>
-        <requirement type="package" version="4.4">r-base</requirement>
-        <requirement type="package">r-readr</requirement>
-        <requirement type="package">r-dplyr</requirement>
-        <requirement type="package">r-tidyr</requirement>
-        <requirement type="package">r-tibble</requirement>
-        <requirement type="package">r-cluster</requirement>
-        <requirement type="package">r-purrr</requirement>
-        <requirement type="package">r-ape</requirement>
-        <requirement type="package">r-stringr</requirement>
-    </requirements>
-
-<command detect_errors="exit_code"><![CDATA[
-Rscript '$__tool_directory__/filter_and_cluster.R' --input '$input' --max_missing '$max_missing' --clustering_method '$clustering_method' --dissimilarity_matrix '$dissimilarity_matrix' --hamming_distances '$hamming_distances' --tree '$tree'
-]]></command>
-
+    <macros>
+        <import>macros.xml</import>
+    </macros>
+    <expand macro="requirements"/>
+    <required_files>
+        <include path="filter_and_cluster.R"/>
+    </required_files>
+    <version_command>echo @TOOL_VERSION@</version_command>
+    <command detect_errors="aggressive"><![CDATA[
+        Rscript '$__tool_directory__/filter_and_cluster.R'
+            --input '$input'
+            --max-missing '$max_missing'
+            --clustering-method '$clustering_method'
+            --dissimilarity-matrix '$dissimilarity_matrix'
+            --hamming-distances '$hamming_distances'
+            --tree '$tree'
+    ]]></command>
     <inputs>
-        <param name="input"
-               type="data"
-               format="tabular,tsv"
-               label="ChewBBACA allele call results file"
-               help="Input allele profile matrix, for example the ChewBBACA results_alleles.tsv file." />
-
-        <param name="clustering_method"
-               type="select"
-               label="Clustering method"
-               help="Choose the method used to generate the Newick tree.">
+        <param name="input" type="data" format="tabular,tsv" label="ChewBBACA allele call results file" help="Input allele profile matrix, for example the ChewBBACA results_alleles.tsv file."/>
+        <param argument="--max-missing" type="integer" value="100" min="0" label="Maximum number of missing alleles" help="Samples with more than this number of missing alleles will be removed before clustering."/>
+        <param argument="--clustering-method" type="select" label="Clustering method" help="Choose the method used to generate the Newick tree.">
             <option value="single" selected="true">Single linkage</option>
             <option value="nj">Neighbor joining</option>
         </param>
-
-        <param name="max_missing"
-               type="float"
-               value="10"
-               min="0"
-               label="Maximum number of missing alleles"
-               help="Samples with more than this number of missing alleles will be removed before clustering." />
     </inputs>
-
     <outputs>
-        <data name="dissimilarity_matrix"
-              format="tabular"
-              label="${tool.name} on ${on_string}: dissimilarity matrix" />
-
-        <data name="hamming_distances"
-              format="tabular"
-              label="${tool.name} on ${on_string}: Hamming distances" />
-
-        <data name="tree"
-              format="newick"
-              label="${tool.name} on ${on_string}: cgMLST tree" />
+        <data name="dissimilarity_matrix" format="tabular" label="${tool.name} on ${on_string}: dissimilarity matrix"/>
+        <data name="hamming_distances" format="tabular" label="${tool.name} on ${on_string}: Hamming distances"/>
+        <data name="tree" format="newick" label="${tool.name} on ${on_string}: cgMLST tree"/>
     </outputs>
-
     <tests>
         <test expect_num_outputs="3">
-            <param name="input" value="results_alleles.tsv" ftype="tabular" />
-            <param name="clustering_method" value="single" />
-            <param name="max_missing" value="10" />
-
-            <output name="dissimilarity_matrix"
-                    file="dissimilarity_matrix.tsv"
-                    ftype="tabular" />
-
-            <output name="hamming_distances"
-                    file="hamming_distances.tsv"
-                    ftype="tabular" />
-
-            <output name="tree"
-                    file="cgMLST_tree.nwk"
-                    ftype="newick" />
+            <param name="input" value="results_alleles.tsv" ftype="tabular"/>
+            <param name="max_missing" value="38"/>
+            <param name="clustering_method" value="single"/>
+            <output name="dissimilarity_matrix" file="dissimilarity_matrix.tsv" ftype="tabular"/>
+            <output name="hamming_distances" file="hamming_distances.tsv" ftype="tabular"/>
+            <output name="tree" file="cgMLST_tree.nwk" ftype="newick"/>
+        </test>
+        <test expect_num_outputs="3">
+            <param name="input" value="results_alleles.tsv" ftype="tabular"/>
+            <param name="max_missing" value="38"/>
+            <param name="clustering_method" value="nj"/>
+            <output name="dissimilarity_matrix" file="dissimilarity_matrix.tsv" ftype="tabular"/>
+            <output name="hamming_distances">
+                <assert_contents>
+                    <has_text text="isolate1"/>
+                    <has_text text="hamming"/>
+                </assert_contents>
+            </output>
+            <output name="tree" file="cgMLST_tree_nj.nwk" ftype="newick"/>
         </test>
     </tests>
-
-    <help><![CDATA[
-
-.. class:: infomark
-
+    <help format="markdown"><![CDATA[
 **What it does**
 
 This tool filters and clusters ChewBBACA cgMLST allele call results.
 
-It removes samples with more than the selected number of missing alleles, calculates pairwise allele differences, and generates a clustering tree.
+It removes samples with more than the selected number of missing alleles,
+calculates pairwise allele differences, and generates a clustering tree.
 
 -----
 
@@ -94,36 +69,29 @@ The input should be a ChewBBACA allele profile matrix, for example:
 
 ``results_alleles.tsv``
 
-Rows should represent samples and columns should represent cgMLST loci or allele calls.
+Rows represent samples and columns represent cgMLST loci or allele calls.
+
+ChewBBACA-specific codes (LNF, NIPH, NIPHEM, ASM, ALM, PLOT5, PLOT3, PAMA,
+PLNF, LOTSC) and the ``INF-`` prefix are automatically handled as missing data.
 
 -----
 
 **Parameters**
 
-**Maximum number of missing alleles**
-
-Samples with more than this number of missing allele calls are removed before clustering.
-
-**Clustering method**
-
-Two clustering methods are available:
-
-- ``single``: single-linkage hierarchical clustering
-- ``nj``: neighbor joining
+- **Maximum number of missing alleles**: samples with more than this number
+  of missing allele calls are removed before clustering.
+- **Clustering method**:
+  - ``single``: single-linkage hierarchical clustering
+  - ``nj``: neighbor joining
 
 -----
 
 **Outputs**
 
-The tool produces three outputs:
-
-- **Dissimilarity matrix**: pairwise dissimilarity values between samples
-- **Hamming distance table**: pairwise Hamming distances between samples
+- **Dissimilarity matrix**: pairwise Gower dissimilarity values between samples
+- **Hamming distance table**: pairwise Hamming distances with per-pair statistics
+  (compared alleles, typed alleles, missing alleles)
 - **cgMLST tree**: Newick tree file
-
     ]]></help>
-
-    <citations>
-    </citations>
-
+    <expand macro="citations"/>
 </tool>

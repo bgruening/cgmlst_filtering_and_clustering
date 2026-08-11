@@ -17,14 +17,14 @@ get_arg <- function(flag, default = NULL) {
 }
 
 input <- get_arg("--input")
-max_missing <- get_arg("--max_missing")
-clustering_method <- get_arg("--clustering_method")
+max_missing <- get_arg("--max-missing")
+clustering_method <- get_arg("--clustering-method")
 
 dissimilarity_matrix_out <- get_arg(
-  "--dissimilarity_matrix",
+  "--dissimilarity-matrix",
   "dissimilarity_matrix.tsv"
 )
-hamming_distances_out <- get_arg("--hamming_distances", "hamming_distances.tsv")
+hamming_distances_out <- get_arg("--hamming-distances", "hamming_distances.tsv")
 tree_out <- get_arg("--tree", "dendrogram.nwk")
 
 if (is.null(input)) {
@@ -32,7 +32,7 @@ if (is.null(input)) {
 }
 
 if (is.null(clustering_method)) {
-  stop("Missing required argument: --clustering_method", call. = FALSE)
+  stop("Missing required argument: --clustering-method", call. = FALSE)
 }
 
 # Load libraries
@@ -67,11 +67,15 @@ data_clean <- data %>%
 # Filter out samples with too many
 # missing alleles
 data_filtered <- data_clean %>%
-  mutate(NA_count = apply(., 1, function(x) sum(is.na(x)))) %>%
+  mutate(NA_count = rowSums(is.na(select(., -FILE)))) %>%
   filter(NA_count <= as.numeric(max_missing)) %>%
   select(-NA_count) %>%
   mutate_at(vars(-FILE), as.factor) %>%
   column_to_rownames("FILE")
+
+if (nrow(data_filtered) < 2) {
+  stop("Not enough samples after filtering (need at least 2). Adjust --max-missing to retain more samples.", call. = FALSE)
+}
 
 # Calculate dissimilarity matrix
 dissimilarity <- daisy(
